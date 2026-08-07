@@ -14,6 +14,8 @@
 
     This also calculates the opportunity cost of not investing the cost of the battery and instead getting
     a safe steady return. (You still have to pay for the electricity you use)
+
+    This simulation is for educational purposes only and does not imply actual savings. YMMV
 """
 
 
@@ -76,7 +78,7 @@ investment_annual_return_default = 0.05  # return on a safe investment
 investment_annual_return = float(input(f"Enter annual investment return (default {investment_annual_return_default}) ").strip() or
                             investment_annual_return_default)
 
-electrical_savings_investment = 0.0 # Money you make if you invest your annual savings
+total_electrical_savings_investment = 0.0 # Money you make if you invest your annual savings
 
 total_no_battery_electricity_costs = 0.0
 total_opportunity_return = 0.0
@@ -110,20 +112,21 @@ for year in range (1,years_to_run_simulation,1):
     depreciated_battery_system_value = max( depreciated_battery_system_value,  0.0)
     print(f"    Current Battery value: ${depreciated_battery_system_value:.2f}")
 
-    electrical_savings_investment += total_possible_electricity_cost_savings * investment_annual_return
-    print(f"    electrical savings earnings if invested ${electrical_savings_investment:.2f}")
+    total_electrical_savings_investment += total_possible_electricity_cost_savings * investment_annual_return
+    print(f"    electrical savings earnings if invested ${total_electrical_savings_investment:.2f}")
 
-
-    if break_even_year == 0 and (total_possible_electricity_cost_savings + electrical_savings_investment) >= battery_system_install_cost:
+    if break_even_year == 0 and (total_possible_electricity_cost_savings + total_electrical_savings_investment) >= battery_system_install_cost:
         break_even_year = year
 
 print("")
-print(f"Your break even year is year {break_even_year}")
+if break_even_year != 0:
+    print(f"Your break even year is year {break_even_year}")
 print(f"Total possible electricity cost savings ${total_possible_electricity_cost_savings:.2f}")
-total_possible_electricity_cost_savings += electrical_savings_investment
+total_possible_electricity_cost_savings += total_electrical_savings_investment
 print(f"Total possible savings if annual electrical savings are invested: ${total_possible_electricity_cost_savings:.2f}")
 
-print(f"Opportunity return if you didn't buy a battery but invested the money {investment_annual_return * 100}% ${total_opportunity_return:.2f}")
+investment_annual_return_percentage = investment_annual_return * 100
+print(f"Opportunity return if you didn't buy a battery but invested the money {investment_annual_return_percentage:.2f}% ${total_opportunity_return:.2f}")
 
 print(f"Total cost of electricity without a battery ${total_no_battery_electricity_costs:.2f}")
 
