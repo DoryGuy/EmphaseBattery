@@ -13,7 +13,7 @@
     you can sell the excess back to the grid or would have had to buy it at peak rates.
 
     This also calculates the opportunity cost of not investing the cost of the battery and instead getting
-    a safe steady return.
+    a safe steady return. (You still have to pay for the electricity you use)
 """
 
 
@@ -44,12 +44,14 @@ num_days_at_summer_rates = 153 # June 1 thru Oct 31
 depreciated_battery_system_value_default = 20000
 depreciated_battery_system_value = float(input(f"Enter new battery system value (default {depreciated_battery_system_value_default:.2f}) ").strip() or
                       depreciated_battery_system_value_default)
-new_battery_annual_depreciation_default = 0.10
-new_battery_annual_depreciation = float(input(f"Enter new battery annual depreciation rate (default {new_battery_annual_depreciation_default:.2f}) ").strip() or
-                      new_battery_annual_depreciation_default)
+battery_system_lifetime_default = 15 # 15 year depreciation
+battery_system_lifetime = int(input(f"Enter battery warranty in years (default {battery_system_lifetime_default}) ").strip() or
+                      battery_system_lifetime_default)
 battery_system_install_cost_default = 10500.00  # dollars
 battery_system_install_cost = float(input(f"Enter your battery installation cost (default {battery_system_install_cost_default:.2f}) ") or
                          battery_system_install_cost_default)
+
+battery_depreciation_value = depreciated_battery_system_value / battery_system_lifetime
 
 winter_savings = winter_effective_rate * battery_max_output * num_days_at_winter_rates
 summer_savings = summer_effective_rate * battery_max_output * num_days_at_summer_rates
@@ -59,40 +61,52 @@ annual_electricity_rate_increase_default = 0.086 # SDG&E proposed rate increase 
 annual_electricity_rate_increase = float(input(f"Enter annual rate increase (default {annual_electricity_rate_increase_default}) ").strip() or
                          annual_electricity_rate_increase_default)
 
+years_between_rate_increases_default = 1
+years_between_rate_increases = int( input(f"Enters number of years between rate increases (default {years_between_rate_increases_default}): ").strip() or
+                                 years_between_rate_increases_default)
+
 hours_at_peak_rate = 4
 winter_no_battery = winter_peak_rate * num_days_at_winter_rates * hours_at_peak_rate
 summer_no_battery = summer_peak_rate * num_days_at_summer_rates * hours_at_peak_rate
 annual_no_battery_cost = winter_no_battery + summer_no_battery
 
 total_possible_electricity_cost_savings = 0.0
-opportunity_cost = battery_system_install_cost
+opportunity_cost_fund = battery_system_install_cost
 investment_annual_return_default = 0.05  # return on a safe investment
 investment_annual_return = float(input(f"Enter annual investment return (default {investment_annual_return_default}) ").strip() or
                             investment_annual_return_default)
 
-electrical_savings_investment = 0.0
+electrical_savings_investment = 0.0 # Money you make if you invest your annual savings
 
-total_no_battery_cost = 0.0
+total_no_battery_electricity_costs = 0.0
+total_opportunity_return = 0.0
+break_even_year = 0   # year that your investment pays off
 
-for year in range (1,21,1):
-    print(f"Year {year}:")
-    print(f"    Possible this year's savings: ${annual_possible_electricity_cost_savings:.2f}")
+years_to_run_simulation_for_default = 15
+years_to_run_simulation = int( input(f"Enter years to run simulation for (default {years_to_run_simulation_for_default}: ").strip() or
+                            years_to_run_simulation_for_default)
+years_to_run_simulation += 1  # we start at year 1 so the loop needs one more iteration.
+for year in range (1,years_to_run_simulation,1):
+    print(f"End of Year {year}:")
+    print(f"    Possible this year's electricity cost savings: ${annual_possible_electricity_cost_savings:.2f}")
     total_possible_electricity_cost_savings += annual_possible_electricity_cost_savings
-    print(f"    Possible total electrical savings: ${total_possible_electricity_cost_savings:.2f}")
-    annual_possible_electricity_cost_savings *= 1 + annual_electricity_rate_increase
-    opportunity_cost += opportunity_cost * investment_annual_return
-    opportunity_return = opportunity_cost - battery_system_install_cost
-    opportunity_return = max( opportunity_return, 0.0)
-    opportunity_cost = battery_system_install_cost + opportunity_return
-    opportunity_cost -= annual_no_battery_cost      # You have to pay for electricity that you used
-    opportunity_cost = max( opportunity_cost, 0.0)
-    print(f"    Possible total opportunity return ${opportunity_return:.2f}")
+    print(f"    Possible total electricity cost savings: ${total_possible_electricity_cost_savings:.2f}")
+    if year % years_between_rate_increases == 0:
+        annual_possible_electricity_cost_savings *= 1 + annual_electricity_rate_increase
+
+    opportunity_return = opportunity_cost_fund * investment_annual_return
+    opportunity_cost_fund += opportunity_return
+    total_opportunity_return += opportunity_return
+    opportunity_cost_fund -= annual_no_battery_cost      # You have to pay for electricity that you used
+    opportunity_cost_fund = max( opportunity_cost_fund, 0.0)
+    print(f"    Possible opportunity return ${opportunity_return:.2f}")
 
     print(f"    No battery additional electrical cost for the year ${annual_no_battery_cost:.2f} ")
-    total_no_battery_cost += annual_no_battery_cost
-    annual_no_battery_cost *= 1 + annual_electricity_rate_increase
+    total_no_battery_electricity_costs += annual_no_battery_cost
+    if year % years_between_rate_increases == 0:
+        annual_no_battery_cost *= 1 + annual_electricity_rate_increase
 
-    depreciated_battery_system_value -= depreciated_battery_system_value * new_battery_annual_depreciation
+    depreciated_battery_system_value -= battery_depreciation_value
     depreciated_battery_system_value = max( depreciated_battery_system_value,  0.0)
     print(f"    Current Battery value: ${depreciated_battery_system_value:.2f}")
 
@@ -100,24 +114,28 @@ for year in range (1,21,1):
     print(f"    electrical savings earnings if invested ${electrical_savings_investment:.2f}")
 
 
-    if (total_possible_electricity_cost_savings + electrical_savings_investment) >= battery_system_install_cost:
-        break
+    if break_even_year == 0 and (total_possible_electricity_cost_savings + electrical_savings_investment) >= battery_system_install_cost:
+        break_even_year = year
 
 print("")
+print(f"Your break even year is year {break_even_year}")
 print(f"Total possible electricity cost savings ${total_possible_electricity_cost_savings:.2f}")
 total_possible_electricity_cost_savings += electrical_savings_investment
 print(f"Total possible savings if annual electrical savings are invested: ${total_possible_electricity_cost_savings:.2f}")
 
-opportunity_cost -= battery_system_install_cost
-print(f"Opportunity cost if you didn't buy a battery but invested the money {investment_annual_return * 100}% ${opportunity_cost:.2f}")
+print(f"Opportunity return if you didn't buy a battery but invested the money {investment_annual_return * 100}% ${total_opportunity_return:.2f}")
 
-print(f"Total cost of electricity without a battery ${total_no_battery_cost:.2f}")
-real_opportunity_cost = (opportunity_cost - total_no_battery_cost) - depreciated_battery_system_value
-if real_opportunity_cost > 0:
-    print(f"You would be better off investing your money as you save ${real_opportunity_cost:.2f}")
+print(f"Total cost of electricity without a battery ${total_no_battery_electricity_costs:.2f}")
+
+assets_with_battery_system = depreciated_battery_system_value + total_possible_electricity_cost_savings
+print(f"Assets with a battery ${assets_with_battery_system:.2f}")
+assets_without_battery_system = (battery_system_install_cost + total_opportunity_return) - total_no_battery_electricity_costs
+print(f"Assets without a battery ${assets_without_battery_system:.2f}")
+
+if assets_with_battery_system > assets_without_battery_system:
+    increased_value = assets_with_battery_system - assets_without_battery_system
+    print(f"You should definitely buy a battery as your assets increased by ${increased_value:.2f}")
 else:
-    real_opportunity_cost *= -1
-    print(f"You should definitely buy a battery as you save ${real_opportunity_cost:.2f}")
-
-if total_possible_electricity_cost_savings < battery_system_install_cost:
+    losses_value = assets_without_battery_system - assets_with_battery_system
+    print(f"You would be better off investing your money as you lost ${losses_value:.2f}")
     print("Your battery probably won't last long enough for you to recoup your costs.")
