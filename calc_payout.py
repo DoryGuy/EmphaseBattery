@@ -19,25 +19,30 @@
 """
 
 
+winter_peak_delivery_rate = 0.19990
 winter_peak_rate_default = 0.15409 # dollars per kw
-winter_peak_rate = float(input(f"Enter winter peak rate (default ${winter_peak_rate_default}kw): ").strip() or
+winter_peak_rate_default += winter_peak_delivery_rate
+winter_peak_rate = float(input(f"Enter winter peak rate (default ${winter_peak_rate_default:.5f}kw): ").strip() or
                      winter_peak_rate_default)
 winter_super_off_peak_rate_default = 0.03469
-winter_super_off_peak_rate = float(input(f"Enter winter super off peak rate (default ${winter_super_off_peak_rate_default}kw): ").strip() or
+winter_super_off_peak_rate = float(input(f"Enter winter super off peak rate (default ${winter_super_off_peak_rate_default:.5f}kw): ").strip() or
                                winter_super_off_peak_rate_default)
 # The cost of charging the battery vs using the solar array mid day at super off peak rates.
 winter_effective_rate = winter_peak_rate - winter_super_off_peak_rate
-battery_max_output_default = 10 # kw
-battery_max_output = float(input(f"Enter total max kw that your battery can supply during peak hours (default {battery_max_output_default}kw) ").strip() or
+battery_max_output_default = 10.0 # kw
+battery_max_output = float(input(f"Enter total max kw that your battery can supply during peak hours (default {battery_max_output_default:.2f}kw) ").strip() or
                        battery_max_output_default)
 
 num_days_at_winter_rates = 222 # Nov 1 thru May 31
 
+summer_peak_delivery_rate = 0.25791
 summer_peak_rate_default = 0.41063 # dollars per kw
-summer_peak_rate = float(input(f"Enter summer peak rate (default ${summer_peak_rate_default}kw): ").strip() or
+# for the moment just add these two
+summer_peak_rate_default += summer_peak_delivery_rate
+summer_peak_rate = float(input(f"Enter summer peak rate (default ${summer_peak_rate_default:.5f}kw): ").strip() or
                      summer_peak_rate_default)
 summer_super_off_peak_rate_default = 0.04168
-summer_super_off_peak_rate = float(input(f"Enter summer super off peak rate (default ${summer_super_off_peak_rate_default}kw): ").strip() or
+summer_super_off_peak_rate = float(input(f"Enter summer super off peak rate (default ${summer_super_off_peak_rate_default:.5f}kw): ").strip() or
                                summer_super_off_peak_rate_default)
 # The cost of charging the battery vs using the solar array mid day.
 summer_effective_rate = summer_peak_rate - summer_super_off_peak_rate
