@@ -20,7 +20,7 @@
 
 
 winter_peak_delivery_rate_default = 0.19990   # dollars per kw
-winter_peak_delivery_rate = float(input(f"Enter Winter Peak delivery rate (default {winter_peak_delivery_rate_default:.5f}): ").strip() or \
+winter_peak_delivery_rate = float(input(f"Enter winter peak delivery rate (default {winter_peak_delivery_rate_default:.5f}): ").strip() or \
                              winter_peak_delivery_rate_default)
 winter_peak_rate_default = 0.15409 # dollars per kw
 winter_peak_rate = float(input(f"Enter winter peak rate (default ${winter_peak_rate_default:.5f}kw): ").strip() or \
@@ -38,7 +38,7 @@ battery_max_output = float(input(f"Enter total max kw that your battery can supp
 num_days_at_winter_rates = 222 # Nov 1 thru May 31
 
 summer_peak_delivery_rate_default = 0.25791
-summer_peak_delivery_rate = float(input(f"Enter Summer Peak delivery rate (default {summer_peak_delivery_rate_default:.5f}): ").strip() or \
+summer_peak_delivery_rate = float(input(f"Enter summer peak delivery rate (default {summer_peak_delivery_rate_default:.5f}): ").strip() or \
                              summer_peak_delivery_rate_default)
 summer_peak_rate_default = 0.41063 # dollars per kw
 summer_peak_rate = float(input(f"Enter summer peak rate (default ${summer_peak_rate_default:.5f}kw): ").strip() or \
@@ -71,8 +71,8 @@ annual_electricity_rate_increase_default = 0.086 # SDG&E proposed rate increase 
 annual_electricity_rate_increase = float(input(f"Enter annual rate increase (default {annual_electricity_rate_increase_default}) ").strip() or \
                                     annual_electricity_rate_increase_default)
 
-years_between_rate_increases_default = 1
-years_between_rate_increases = int( input(f"Enters number of years between rate increases (default {years_between_rate_increases_default}): ").strip() or \
+years_between_rate_increases_default = 2
+years_between_rate_increases = int( input(f"Enter number of years between rate increases (default {years_between_rate_increases_default}): ").strip() or \
                                  years_between_rate_increases_default)
 
 hours_at_peak_rate = 4
@@ -110,7 +110,10 @@ for year in range (1,years_to_run_simulation,1):
     total_opportunity_return += opportunity_return
     opportunity_cost_fund -= annual_no_battery_cost      # You have to pay for electricity that you used
     opportunity_cost_fund = max( opportunity_cost_fund, 0.0)
-    print(f"    Possible opportunity return ${opportunity_return:.2f}")
+    if opportunity_return > 0:
+        print(f"    Possible opportunity return ${opportunity_return:.2f}")
+    else:
+        print("You are no longer earning anything from your opportunity fund.")
 
     print(f"    No battery additional electrical cost for the year ${annual_no_battery_cost:.2f} ")
     total_no_battery_electricity_costs += annual_no_battery_cost
@@ -132,12 +135,14 @@ for year in range (1,years_to_run_simulation,1):
 print("")
 if break_even_year != 0:
     print(f"Your break even year is year {break_even_year}")
+    print(" This is the year that your cost of installation plus the opportunity lost cost is less than")
+    print(" the savings on your electrical bill plus the investment savings from those annual savings.")
 print(f"Total possible electricity cost savings ${total_possible_electricity_cost_savings:.2f}")
 total_possible_electricity_cost_savings += total_electrical_savings_investment
 print(f"Total possible savings if annual electrical savings are invested: ${total_possible_electricity_cost_savings:.2f}")
 
 investment_annual_return_percentage = investment_annual_return * 100
-print(f"Opportunity return if you didn't buy a battery but invested the money {investment_annual_return_percentage:.2f}% ${total_opportunity_return:.2f}")
+print(f"Total Opportunity return if you didn't buy a battery but invested the money {investment_annual_return_percentage:.2f}% ${total_opportunity_return:.2f}")
 
 print(f"Total cost of electricity without a battery ${total_no_battery_electricity_costs:.2f}")
 
