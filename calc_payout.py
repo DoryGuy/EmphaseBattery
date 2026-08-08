@@ -115,7 +115,7 @@ for year in range (1,years_to_run_simulation,1):
     total_electrical_savings_investment += total_possible_electricity_cost_savings * investment_annual_return
     print(f"    electrical savings earnings if invested ${total_electrical_savings_investment:.2f}")
 
-    if break_even_year == 0 and (total_possible_electricity_cost_savings + total_electrical_savings_investment) >= battery_system_install_cost:
+    if break_even_year == 0 and (total_possible_electricity_cost_savings + total_electrical_savings_investment) >= (battery_system_install_cost + total_opportunity_return):
         break_even_year = year
 
 print("")
@@ -131,6 +131,7 @@ print(f"Opportunity return if you didn't buy a battery but invested the money {i
 print(f"Total cost of electricity without a battery ${total_no_battery_electricity_costs:.2f}")
 
 assets_with_battery_system = depreciated_battery_system_value + total_possible_electricity_cost_savings
+assets_with_battery_system -= battery_system_install_cost
 print(f"Assets with a battery ${assets_with_battery_system:.2f}")
 assets_without_battery_system = (battery_system_install_cost + total_opportunity_return) - total_no_battery_electricity_costs
 print(f"Assets without a battery ${assets_without_battery_system:.2f}")
