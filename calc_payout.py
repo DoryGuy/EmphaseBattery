@@ -19,79 +19,83 @@
 """
 
 
-winter_peak_delivery_rate = 0.19990
+winter_peak_delivery_rate_default = 0.19990   # dollars per kw
+winter_peak_delivery_rate = float(input(f"Enter Winter Peak delivery rate (default {winter_peak_delivery_rate_default:.5f}): ").strip() or \
+                             winter_peak_delivery_rate_default)
 winter_peak_rate_default = 0.15409 # dollars per kw
-winter_peak_rate_default += winter_peak_delivery_rate
-winter_peak_rate = float(input(f"Enter winter peak rate (default ${winter_peak_rate_default:.5f}kw): ").strip() or
+winter_peak_rate = float(input(f"Enter winter peak rate (default ${winter_peak_rate_default:.5f}kw): ").strip() or \
                      winter_peak_rate_default)
+winter_peak_rate += winter_peak_delivery_rate
 winter_super_off_peak_rate_default = 0.03469
-winter_super_off_peak_rate = float(input(f"Enter winter super off peak rate (default ${winter_super_off_peak_rate_default:.5f}kw): ").strip() or
+winter_super_off_peak_rate = float(input(f"Enter winter super off peak rate (default ${winter_super_off_peak_rate_default:.5f}kw): ").strip() or \
                                winter_super_off_peak_rate_default)
 # The cost of charging the battery vs using the solar array mid day at super off peak rates.
 winter_effective_rate = winter_peak_rate - winter_super_off_peak_rate
 battery_max_output_default = 10.0 # kw
-battery_max_output = float(input(f"Enter total max kw that your battery can supply during peak hours (default {battery_max_output_default:.2f}kw) ").strip() or
+battery_max_output = float(input(f"Enter total max kw that your battery can supply during peak hours (default {battery_max_output_default:.2f}kw) ").strip() or \
                        battery_max_output_default)
 
 num_days_at_winter_rates = 222 # Nov 1 thru May 31
 
-summer_peak_delivery_rate = 0.25791
+summer_peak_delivery_rate_default = 0.25791
+summer_peak_delivery_rate = float(input(f"Enter Summer Peak delivery rate (default {summer_peak_delivery_rate_default:.5f}): ").strip() or \
+                             summer_peak_delivery_rate_default)
 summer_peak_rate_default = 0.41063 # dollars per kw
-# for the moment just add these two
-summer_peak_rate_default += summer_peak_delivery_rate
-summer_peak_rate = float(input(f"Enter summer peak rate (default ${summer_peak_rate_default:.5f}kw): ").strip() or
+summer_peak_rate = float(input(f"Enter summer peak rate (default ${summer_peak_rate_default:.5f}kw): ").strip() or \
                      summer_peak_rate_default)
 summer_super_off_peak_rate_default = 0.04168
-summer_super_off_peak_rate = float(input(f"Enter summer super off peak rate (default ${summer_super_off_peak_rate_default:.5f}kw): ").strip() or
+summer_super_off_peak_rate = float(input(f"Enter summer super off peak rate (default ${summer_super_off_peak_rate_default:.5f}kw): ").strip() or \
                                summer_super_off_peak_rate_default)
+summer_peak_rate += summer_peak_delivery_rate
 # The cost of charging the battery vs using the solar array mid day.
 summer_effective_rate = summer_peak_rate - summer_super_off_peak_rate
 num_days_at_summer_rates = 153 # June 1 thru Oct 31
 
 depreciated_battery_system_value_default = 20000
-depreciated_battery_system_value = float(input(f"Enter new battery system value (default {depreciated_battery_system_value_default:.2f}) ").strip() or
+depreciated_battery_system_value = float(input(f"Enter new battery system value (default {depreciated_battery_system_value_default:.2f}) ").strip() or \
                       depreciated_battery_system_value_default)
 battery_system_lifetime_default = 15 # 15 year depreciation
-battery_system_lifetime = int(input(f"Enter battery warranty in years (default {battery_system_lifetime_default}) ").strip() or
+battery_system_lifetime = int(input(f"Enter battery warranty in years (default {battery_system_lifetime_default}) ").strip() or \
                       battery_system_lifetime_default)
 battery_system_install_cost_default = 10500.00  # dollars
-battery_system_install_cost = float(input(f"Enter your battery installation cost (default {battery_system_install_cost_default:.2f}) ") or
+battery_system_install_cost = float(input(f"Enter your battery installation cost (default {battery_system_install_cost_default:.2f}) ") or \
                          battery_system_install_cost_default)
 
-battery_depreciation_value = depreciated_battery_system_value / battery_system_lifetime
+battery_annual_depreciation_amount = depreciated_battery_system_value / battery_system_lifetime
 
 winter_savings = winter_effective_rate * battery_max_output * num_days_at_winter_rates
 summer_savings = summer_effective_rate * battery_max_output * num_days_at_summer_rates
 
 annual_possible_electricity_cost_savings = winter_savings + summer_savings
 annual_electricity_rate_increase_default = 0.086 # SDG&E proposed rate increase in 2028
-annual_electricity_rate_increase = float(input(f"Enter annual rate increase (default {annual_electricity_rate_increase_default}) ").strip() or
-                         annual_electricity_rate_increase_default)
+annual_electricity_rate_increase = float(input(f"Enter annual rate increase (default {annual_electricity_rate_increase_default}) ").strip() or \
+                                    annual_electricity_rate_increase_default)
 
 years_between_rate_increases_default = 1
-years_between_rate_increases = int( input(f"Enters number of years between rate increases (default {years_between_rate_increases_default}): ").strip() or
+years_between_rate_increases = int( input(f"Enters number of years between rate increases (default {years_between_rate_increases_default}): ").strip() or \
                                  years_between_rate_increases_default)
 
 hours_at_peak_rate = 4
-winter_no_battery = winter_peak_rate * num_days_at_winter_rates * hours_at_peak_rate
-summer_no_battery = summer_peak_rate * num_days_at_summer_rates * hours_at_peak_rate
-annual_no_battery_cost = winter_no_battery + summer_no_battery
+winter_no_battery_cost = winter_peak_rate * num_days_at_winter_rates * hours_at_peak_rate
+summer_no_battery_cost = summer_peak_rate * num_days_at_summer_rates * hours_at_peak_rate
+annual_no_battery_cost = winter_no_battery_cost + summer_no_battery_cost
 
 total_possible_electricity_cost_savings = 0.0
 opportunity_cost_fund = battery_system_install_cost
 investment_annual_return_default = 0.05  # return on a safe investment
-investment_annual_return = float(input(f"Enter annual investment return (default {investment_annual_return_default}) ").strip() or
+investment_annual_return = float(input(f"Enter annual investment return (default {investment_annual_return_default}) ").strip() or \
                             investment_annual_return_default)
 
-total_electrical_savings_investment = 0.0 # Money you make if you invest your annual savings
+total_electrical_savings_investment = 0.0 # Money you make if you invest your annual electrical cost savings
 
 total_no_battery_electricity_costs = 0.0
 total_opportunity_return = 0.0
-break_even_year = 0   # year that your investment pays off
+break_even_year = -1   # year that your investment pays off
 
 years_to_run_simulation_for_default = 15
-years_to_run_simulation = int( input(f"Enter years to run simulation for (default {years_to_run_simulation_for_default}: ").strip() or
+years_to_run_simulation = int( input(f"Enter years to run simulation for (default {years_to_run_simulation_for_default}: ").strip() or \
                             years_to_run_simulation_for_default)
+
 years_to_run_simulation += 1  # we start at year 1 so the loop needs one more iteration.
 for year in range (1,years_to_run_simulation,1):
     print(f"End of Year {year}:")
@@ -113,14 +117,16 @@ for year in range (1,years_to_run_simulation,1):
     if year % years_between_rate_increases == 0:
         annual_no_battery_cost *= 1 + annual_electricity_rate_increase
 
-    depreciated_battery_system_value -= battery_depreciation_value
+    depreciated_battery_system_value -= battery_annual_depreciation_amount
     depreciated_battery_system_value = max( depreciated_battery_system_value,  0.0)
     print(f"    Current Battery value: ${depreciated_battery_system_value:.2f}")
 
     total_electrical_savings_investment += total_possible_electricity_cost_savings * investment_annual_return
     print(f"    electrical savings earnings if invested ${total_electrical_savings_investment:.2f}")
 
-    if break_even_year == 0 and (total_possible_electricity_cost_savings + total_electrical_savings_investment) >= (battery_system_install_cost + total_opportunity_return):
+    if break_even_year == -1 and \
+        (total_possible_electricity_cost_savings + total_electrical_savings_investment) >= \
+          (battery_system_install_cost + total_opportunity_return):
         break_even_year = year
 
 print("")
