@@ -1,9 +1,8 @@
 A python program to help decide whether to install a battery to time shift the costs of electricity in the SDG&E system.
 Any cost savings are theoretical and are not guaranteed, YMMV.
 
-This simulation allows you to figure the depreciated value of the battery over the life of the warranty. It currently
-does not degrade the capacity of the battery over time. (Which in real life will occur) And it assumes that you will
-invest the annual electrical cost savings in a fund and not buy more avocado toast and lattes.
+This simulation allows you to figure the depreciated value of the battery over the life of the warranty.
+And it assumes that you will invest the annual electrical cost savings in a fund and not buy more avocado toast and lattes.
 
 This program assumes that your solar system can provide both enough electricity to fully charge your battery
 and provide normal kws of energy for the 4 hours that SDG&E sells power at super off peak rates ie 10am to 2pm M->F
